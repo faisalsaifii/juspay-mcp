@@ -13,12 +13,8 @@ async def get_offer_details_juspay(payload: dict, meta_info: dict = None) -> dic
     The API endpoint is:
         https://portal.juspay.in/api/offers/dashboard/detail
 
-    The call uses URL parameters:
-        - merchant_id: Merchant identifier
-
-    And JSON body containing:
-        - offer_ids: Array containing the offer ID
-        - merchant_id: Merchant identifier
+    The call uses JSON body containing:
+        - offer_ids: Array containing the offer IDs
 
     Headers include:
         - x-tenant-id from payload
@@ -37,13 +33,9 @@ async def get_offer_details_juspay(payload: dict, meta_info: dict = None) -> dic
         ValueError: If merchantId is missing.
         Exception: If the API call fails.
     """
-    merchant_id = payload.get("merchant_id")
-    if not merchant_id:
-        raise ValueError("'merchantId' is required in the payload")
 
     host = await get_juspay_host_from_api()
-    api_url = f"{host}/api/offers/dashboard/detail?merchant_id={merchant_id}"
-    
+    api_url = f"{host}/api/offers/dashboard/detail"
     return await post(api_url, payload, None, meta_info)
 
 async def list_offers_juspay(payload: dict, meta_info: dict = None) -> dict:
@@ -54,10 +46,7 @@ async def list_offers_juspay(payload: dict, meta_info: dict = None) -> dict:
     The API endpoint is:
         https://portal.juspay.in/api/offers/dashboard/dashboard-list
 
-    The call uses URL parameters:
-        - merchant_id: Merchant identifier
-
-    And JSON body containing:
+    The call uses JSON body containing:
         - merchant_id: Merchant identifier
         - start_time: Start time for filtering offers
         - end_time: End time for filtering offers
@@ -79,18 +68,9 @@ async def list_offers_juspay(payload: dict, meta_info: dict = None) -> dict:
         ValueError: If required parameters are missing.
         Exception: If the API call fails.
     """
-    if "merchant_id" not in payload or "start_time" not in payload or "end_time" not in payload:
-        raise ValueError("Payload must contain 'merchant_id', 'start_time', and 'end_time'.")
+    if "merchant_id" not in payload:
+        raise ValueError("Payload must contain 'merchant_id'")
 
-    merchant_id = payload.get("merchant_id")
     host = await get_juspay_host_from_api()
-    api_url = f"{host}/api/offers/dashboard/dashboard-list?merchant_id={merchant_id}"
-    created_at =  {
-            "gte": payload.get("start_time"),
-            "lte": payload.get("end_time")
-        }
-    payload = {
-        "created_at": created_at,
-        **payload
-    }
+    api_url = f"{host}/api/offers/dashboard/dashboard-list"
     return await post(api_url, payload, None, meta_info)

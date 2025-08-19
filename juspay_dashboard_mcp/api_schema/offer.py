@@ -14,18 +14,21 @@ class JuspayGetOfferDetailsPayload(WithHeaders):
         ...,
         description="List of unique identifiers of the offers to retrieve details for."
     )
-    merchant_id: str = Field(
+    offer_codes: List[str] = Field(
         ...,
-        description="Merchant ID associated with the offer."
-    )
-    is_batch: Optional[bool] = Field(
-        False,
-        description="Whether this is a batch offer (default: False)."
+        description="List of unique identifiers of the offer codes to retrieve details for."
     )
 
-class SortOffersOptions(BaseModel):
-    field: str = Field(..., description="Field to sort by, e.g., 'CREATED_AT'.")
+class CreatedAtRange(BaseModel):
+    lte: str = Field(..., description="Less than or equal to timestamp (ISO format).")
+    gte: str = Field(..., description="Greater than or equal to timestamp (ISO format).")
+
+class SortWith(BaseModel):
     order: Literal["ASCENDING", "DESCENDING"] = Field(..., description="Sort order.")
+    field: Literal["GROUP_ID", "STATUS", "OFFER_CODE", "PRIORITY", "CREATED_AT"] = Field(
+        ...,
+        description="Field to sort by."
+    )
 
 class JuspayListOffersPayload(WithHeaders):
     merchant_id: str = Field(
@@ -40,11 +43,59 @@ class JuspayListOffersPayload(WithHeaders):
         ...,
         description="End time for filtering offers (ISO format)."
     )
+    sort_offers: SortWith = Field(
+        ...,
+        description="Sorting options for offers with order and field."
+    )
+    created_at: CreatedAtRange = Field(
+        ...,
+        description="Created at range for filtering offers with gte and lte timestamps."
+    )
+    auto_apply: Optional[Literal["TRUE", "FALSE"]] = Field(
+        default=None,
+        description="Auto apply setting for offers."
+    )
+    batch_id: Optional[List[str]] = Field(
+        default=None,
+        description="List of batch IDs to filter offers."
+    )
+    benefit_type: Optional[List[Literal["CASHBACK", "DISCOUNT", "MERCHANT_DISCOUNT", "EMI_DISCOUNT", "EMI_CASHBACK"]]] = Field(
+        default=None,
+        description="List of benefit types to filter offers."
+    )
+    currency: Optional[List[str]] = Field(
+        default=None,
+        description="List of currencies to filter offers."
+    )
+    fetch_all_offers: Optional[Literal["TRUE", "FALSE"]] = Field(
+        default=None,
+        description="Flag to fetch all offers."
+    )
+    group_id: Optional[List[str]] = Field(
+        default=None,
+        description="List of group IDs to filter offers."
+    )
     limit: Optional[int] = Field(
         default=None,
         description="Limit for number of offers to fetch."
     )
-    sort_offers: SortOffersOptions = Field(
-        ...,
-        description="Sorting options for offers. Example: {'field': 'CREATED_AT', 'order': 'DESCENDING'}"
+    offer_code: Optional[List[str]] = Field(
+        default=None,
+        description="List of offer codes to filter offers."
+    )
+    offer_id: Optional[List[str]] = Field(
+        default=None,
+        description="List of offer IDs to filter offers."
+    )
+    offset: Optional[int] = Field(
+        default=None,
+        description="Offset for pagination."
+    )
+    payment_method_type: Optional[List[Literal["CARD", "UPI", "WALLET", "REWARD", "CONSUMER_FINANCE", "MERCHANT_CONTAINER", "CASH", "RTP", "OTC"]]] = Field(
+        default=None,
+        description="List of payment method types to filter offers."
+    )
+    status: Optional[List[Literal["NEW", "ACTIVE", "PAUSED", "EXPIRED"]]] = Field(
+        default=None,
+        description="List of offer statuses to filter offers."
     )
